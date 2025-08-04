@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: django
+  template:
+    metadata:
+      labels:
+        app: django
+    spec:
+      containers:
+        - name: django
+          image: library-app:latest  # docker build -t library-app:latest .
+          ports:
+            - containerPort: 8000
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: SECRET_KEY
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_PASSWORD
+            - name: DB_HOST
+              value: db
+            - name: DB_PORT
+              value: "3306"
+          volumeMounts:
+            - name: static-volume
+              mountPath: /app/static
+            - name: media-volume
+              mountPath: /app/media
+          command: ["/entrypoint.sh"]
+      volumes:
+        - name: static-volume
+          emptyDir: {}
+        - name: media-volume
+          emptyDir: {}
