@@ -1,18 +1,17 @@
 version: "3.9"
-
 services:
   web:
     build: .
     container_name: django_app
     command: >
       bash -c "
-      echo 'Waiting for database...';
-      until python manage.py migrate; do
-        echo 'DB not ready, retrying...';
-        sleep 5;
-      done
-      python manage.py collectstatic --noinput &&
-      gunicorn Library_Management.wsgi:application --bind 0.0.0.0:8000 --workers 2 --timeout 120
+        echo 'Waiting for database...';
+        until python manage.py migrate; do
+          echo 'DB not ready, retrying...';
+          sleep 5;
+        done;
+        python manage.py collectstatic --noinput &&
+        gunicorn Library_Management.wsgi:application --bind 0.0.0.0:8000 --workers 2 --timeout 120
       "
     volumes:
       - .:/app
