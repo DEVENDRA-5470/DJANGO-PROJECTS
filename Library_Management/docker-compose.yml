@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   web:
     build: .
@@ -10,11 +8,12 @@ services:
       - media_volume:/app/media
     restart: always
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/readiness/"]
+      # Python one-liner → avoids installing curl/wget in slim image
+      test: ["CMD", "python", "-c", "import urllib.request, sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/readiness/').getcode() == 200 else 1)"]
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 20s
+      start_period: 30s   # gives AWS RDS extra startup time
 
   nginx:
     image: nginx:stable
@@ -30,7 +29,8 @@ services:
         condition: service_healthy
     restart: always
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health/"]
+      # nginx has wget built-in
+      test: ["CMD", "wget", "-qO-", "http://localhost/health/"]
       interval: 30s
       timeout: 10s
       retries: 3
