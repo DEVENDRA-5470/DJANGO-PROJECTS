@@ -10,7 +10,7 @@ services:
       - media_volume:/app/media
     restart: always
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/readiness/"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -30,7 +30,7 @@ services:
         condition: service_healthy
     restart: always
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/"]
+      test: ["CMD", "curl", "-f", "http://localhost/health/"]
       interval: 30s
       timeout: 10s
       retries: 3
