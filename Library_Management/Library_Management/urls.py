@@ -18,9 +18,12 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf.urls.static import static
 from django.conf import settings
+from . import health
 
 
 urlpatterns = [
+    path("health/", health.liveness),     # liveness probe
+    path("readiness/", health.readiness), # readiness probe
     path('admin/', admin.site.urls),
     path('',include('customer.urls')),
     path('books/',include('books.urls')),
